@@ -1,0 +1,9 @@
+/emsdk
+/.venv/
+/out/
+
+*.js.d
+*.js.o
+*.wasm
+riscvemu32*.js
+riscvemu64*.js
