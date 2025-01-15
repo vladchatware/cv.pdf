@@ -25,10 +25,10 @@
 # Build the Javascript version of TinyEMU
 EMCC=emcc
 EMCFLAGS=-O2 --llvm-opts 2 -Wall -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -MMD -fno-strict-aliasing -DCONFIG_FS_NET
-EMCFLAGS+=-Wno-fastcomp
+EMCFLAGS+=-Wno-fastcomp -sSINGLE_FILE=1
 EMLDFLAGS=-O3 --memory-init-file 0 --closure 0 -s NO_EXIT_RUNTIME=1 -s NO_FILESYSTEM=1 -s "EXPORTED_FUNCTIONS=['_console_queue_char','_vm_start','_fs_import_file','_display_key_event','_display_mouse_event','_display_wheel_event','_net_write_packet','_net_set_carrier']" -s 'EXTRA_EXPORTED_RUNTIME_METHODS=["ccall", "cwrap"]' -s BINARYEN_TRAP_MODE=clamp --js-library js/lib.js
-EMLDFLAGS_ASMJS:=$(EMLDFLAGS) -s WASM=0 -Wno-fastcomp
-EMLDFLAGS_WASM:=$(EMLDFLAGS) -s WASM=1 -s TOTAL_MEMORY=67108864 -s ALLOW_MEMORY_GROWTH=1 -Wno-fastcomp
+EMLDFLAGS_ASMJS:=$(EMLDFLAGS) -s WASM=0 -Wno-fastcomp -sSINGLE_FILE=1 -sENVIRONMENT=shell
+EMLDFLAGS_WASM:=$(EMLDFLAGS) -s WASM=1 -s TOTAL_MEMORY=67108864 -s ALLOW_MEMORY_GROWTH=1 -Wno-fastcomp -sSINGLE_FILE=1
 
 PROGS=js/riscvemu32.js js/riscvemu32-wasm.js js/riscvemu64.js js/riscvemu64-wasm.js
 
