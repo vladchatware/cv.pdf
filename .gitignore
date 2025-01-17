@@ -1,6 +1,7 @@
 /emsdk
 /.venv/
 /out/
+/build
 
 *.js.d
 *.js.o
