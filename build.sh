@@ -26,6 +26,10 @@ fi
 emmake make -C tinyemu/ -f Makefile.pdfjs -j$(nproc --all)
 
 
+if [ ! -f "build/pako.min.js" ]; then
+  wget "https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js" -O "build/pako.min.js"
+fi
+
 if [ ! -f "build/build_files" ]; then
   gcc tinyemu/build_filelist.c tinyemu/fs_utils.c tinyemu/cutils.c -o build/build_files
 fi
@@ -34,7 +38,7 @@ fi
 build_files() {
   if [ ! -d "build/root" ]; then
     mkdir -p build/mountpoint
-    sudo mount -o ro build/vm/root-riscv32.bin build/mountpoint
+    sudo mount -o ro build/vm/root-riscv64.bin build/mountpoint
     sudo cp -ar build/mountpoint build/root
     sudo umount build/mountpoint
     rm -rf build/mountpoint
@@ -49,7 +53,7 @@ build_files() {
 build_disk() {
   if [ ! -d "build/files/disk" ]; then
     mkdir -p build/files/disk
-    cp build/vm/root-riscv32.bin build/files/disk/root.bin
+    cp build/vm/root-riscv64.bin build/files/disk/root.bin
 
     block_size="256"
     (
@@ -68,7 +72,7 @@ build_disk() {
 }
 
 build_files
-cp vm.cfg build/vm/bbl32.bin build/vm/kernel-riscv32.bin build/files
+cp vm.cfg build/vm/bbl64.bin build/vm/kernel-riscv64.bin build/files
 
 python3 embed_files.py file_template.js build/files/ build/files.js
-cat tinyemu/js/riscvemu32.js build/files.js pdflinux.js > out/compiled.js
+cat build/pako.min.js tinyemu/js/riscvemu64.js build/files.js pdflinux.js > out/compiled.js

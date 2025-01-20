@@ -5,5 +5,5 @@ function b64_to_uint8array(str) {
 
 var embedded_files = __files_data__;
 for (let filename in embedded_files) {
-  embedded_files[filename] = b64_to_uint8array(embedded_files[filename]);
+  embedded_files[filename] = pako.inflate(b64_to_uint8array(embedded_files[filename]));
 }
