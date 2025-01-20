@@ -6,5 +6,6 @@
 *.js.d
 *.js.o
 *.wasm
+*.wat
 riscvemu32*.js
 riscvemu64*.js

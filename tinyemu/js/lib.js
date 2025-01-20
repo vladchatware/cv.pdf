@@ -28,13 +28,15 @@ mergeInto(LibraryManager.library, {
       /* Note: we really send byte values. It would be up to the
         * terminal to support UTF-8 */
       str = String.fromCharCode.apply(String, HEAPU8.subarray(buf, buf + len));
-      term.write(str);
+      console.log(str);
+      //term.write(str);
   },
 
   console_get_size: function(pw, ph)
   {
       var w, h, r;
-      r = term.getSize();
+      //r = term.getSize();
+      r = [80, 30];
       HEAPU32[pw >> 2] = r[0];
       HEAPU32[ph >> 2] = r[1];
   },
@@ -67,21 +69,24 @@ mergeInto(LibraryManager.library, {
     if (!_url.startsWith("file:///")) {
       console.error("invalid url:", _url);
       if (onerror) dynCall('viiii', onerror, [handle, arg, 404, "not found"]);
-      delete Browser.wgetRequests[handle];
     }
 
-    var filename = _url.replace("file:///", "");
-    console.log("loading", filename);
-    if (typeof embedded_files[filename] !== "undefined") {
-      var file_array = embedded_files[filename];
-      var buffer = _malloc(file_array.length);
-      HEAPU8.set(file_array, buffer);
-      if (onload) dynCall('viiii', onload, [handle, arg, buffer, file_array.length]);
-      if (free) _free(buffer);
-      delete Browser.wgetRequests[handle];
-    }
-
-    Browser.wgetRequests[handle] = http;
+    var path = _url.replace("file:///", "").split("?").shift();
+    console.log("loading", path);
+    setTimeout(() => {
+      if (typeof embedded_files[path] !== "undefined") {
+        var file_array = embedded_files[path];
+        var buffer = _malloc(file_array.length);
+        HEAPU8.set(file_array, buffer);
+        if (onload) dynCall('viiii', onload, [handle, arg, buffer, file_array.length]);
+        if (free) _free(buffer);
+      }
+      else {
+        console.error("no file:", _url);
+        if (onerror) dynCall('viiii', onerror, [handle, arg, 404, "not found"]);
+      }
+    });
+    
     return handle;
   },
 
