@@ -5,15 +5,28 @@ var req_handle = 0;
 var timeout_callbacks = {};
 
 function set_timeout_callback(id) {
-  let callback = timeout_callbacks[id];
-  callback();
+  timeout_callbacks[id]();
   delete timeout_callbacks[id];
+}
+
+function set_interval_callback(id) {
+  timeout_callbacks[id]();
+}
+
+function safe_script(js) {
+  return `try {${js}} catch (e) {app.alert(e.stack || e)}`;
 }
 
 function set_timeout(callback, timeout) {
   let id = Math.random()+"";
   timeout_callbacks[id] = callback;
-  app.setTimeOut(`try {set_timeout_callback(${id})} catch (e) {app.alert(e.stack || e)}`, timeout);
+  app.setTimeOut(safe_script(`set_timeout_callback(${id})`), timeout);
+}
+
+function set_interval(callback, interval) {
+  let id = Math.random()+"";
+  timeout_callbacks[id] = callback;
+  app.setInterval(safe_script(`set_interval_callback(${id})`), interval);
 }
 
 var performance = {
@@ -53,21 +66,25 @@ function round_float(num, digits) {
   return Math.round(num * multiplier) / multiplier;
 }
 
+var total_instrs = 0;
+var last_updated = null;
+
 function machine_tick(m_ptr) {
-  let start = Date.now();
-  let instruction_count = _virt_machine_run(m_ptr);
-  let end = Date.now();
-  let k_ips = Math.round(instruction_count / ((end - start) / 1000) / 1000);
-  globalThis.getField("speed_indicator").value = `Speed: ${k_ips} kIPS`;
+  total_instrs += _virt_machine_run(m_ptr);
+  let now = Date.now();
+  let time_interval = now - last_updated;
+  if (time_interval > 1000) {
+    let k_ips = Math.round(total_instrs / ((time_interval) / 1000) / 1000);
+    globalThis.getField("speed_indicator").value = `Speed: ${k_ips} kIPS`;
+    total_instrs = 0;
+    last_updated = now;
+  }
 }
 
 function start_machine_interval(m_ptr) {
   print_msg("starting the machine. please be patient...")
-  set_interval_safe(`machine_tick(${m_ptr})`, 1);
-}
-
-function set_interval_safe(js, timeout) {
-  app.setInterval(`try {${js}} catch (e) {app.alert(e.stack || e)}`, timeout);
+  last_updated = Date.now();
+  set_interval(() => {machine_tick(m_ptr)}, 1)
 }
 
 function update_framebuffer(width, height, data) {

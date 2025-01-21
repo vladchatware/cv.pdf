@@ -35,14 +35,27 @@ if [ ! -f "build/build_files" ]; then
   gcc tinyemu/build_filelist.c tinyemu/fs_utils.c tinyemu/cutils.c -o build/build_files
 fi
 
+get_alpine_rootfs() {
+  wget https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/riscv64/latest-releases.yaml -O build/alpine-releases.yaml
+  download_filename="$(grep "alpine-minirootfs-" build/alpine-releases.yaml | head -n1 | awk '{print $NF}')"
+  download_url="https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/riscv64/$download_filename"
+  wget "$download_url" -O "build/$download_filename"
+  mkdir -p "build/alpine"
+  tar -xf "build/$download_filename" -C "build/alpine"
+
+  echo "nameserver 1.1.1.1" > "build/alpine/etc/resolv.conf"
+  sudo chroot "build/alpine" apk add agetty fastfetch nano htop
+  echo "tty1::respawn:/sbin/agetty --autologin root tty0 linux" > "build/alpine/etc/inittab"
+  echo -e "#!/bin/sh\n\nhostname -F /etc/hostname\nfastfetch -l small" > "build/alpine/root/.profile"
+  chmod +x "build/alpine/root/.profile"
+  
+  echo "linuxpdf" > "build/alpine/etc/hostname"
+}
+
 #use a 9pfs mount for the root - more efficient
 build_files() {
-  if [ ! -d "build/root" ]; then
-    mkdir -p build/mountpoint
-    sudo mount -o ro build/vm/root-riscv64.bin build/mountpoint
-    sudo cp -ar build/mountpoint build/root
-    sudo umount build/mountpoint
-    rm -rf build/mountpoint
+  if [ ! -d "build/alpine" ]; then
+    get_alpine_rootfs
   fi
   if [ ! -d "build/files" ]; then
     mkdir -p build/files/root
