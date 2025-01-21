@@ -24,11 +24,18 @@
 mergeInto(LibraryManager.library, {
   console_write: function(opaque, buf, len)
   {
-      var str;
       /* Note: we really send byte values. It would be up to the
         * terminal to support UTF-8 */
-      str = String.fromCharCode.apply(String, HEAPU8.subarray(buf, buf + len));
-      print_msg(str);
+      var str = String.fromCharCode.apply(String, HEAPU8.subarray(buf, buf + len));
+      for (let char of str) {
+        if (str === "\n") {
+          Module.print(line_buffer);
+          line_buffer = "";
+        }
+        else {
+          line_buffer += char;
+        }
+      }
       //term.write(str);
   },
 

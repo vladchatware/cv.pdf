@@ -98,12 +98,17 @@ if __name__ == "__main__":
     field = create_field(f"console_{i}", 8, 8 + i*8, 200, 8, "")
     fields.append(field)
 
-  fields.append(create_field("speed_indicator", 620, 8, 80, 12, "Loading..."))
+  fields.append(create_field("speed_indicator", 600, 8, 100, 12, "Loading..."))
+  input_field = create_field(f"key_input", 220, 8, 150, 12, "Type here for keyboard inputs.")
+  input_field.AA = PdfDict()
+  input_field.AA.K = create_script("key_pressed(event.change)")
+  fields.append(input_field)
+
   fields += create_key_buttons([])
 
   page.Contents = PdfDict()
   page.Contents.stream = "\n".join([
-    create_text(320, 190, 24, "LinuxPDF")
+    create_text(220, 190, 24, "LinuxPDF")
   ])
 
   page.Annots = PdfArray(fields)

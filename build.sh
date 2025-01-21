@@ -43,13 +43,43 @@ get_alpine_rootfs() {
   mkdir -p "build/alpine"
   tar -xf "build/$download_filename" -C "build/alpine"
 
+  #install base packages
   echo "nameserver 1.1.1.1" > "build/alpine/etc/resolv.conf"
-  sudo chroot "build/alpine" apk add agetty fastfetch nano htop
+  sudo chroot "build/alpine" apk add --no-cache agetty fastfetch nano htop
+
+  #set up autologin
   echo "tty1::respawn:/sbin/agetty --autologin root tty0 linux" > "build/alpine/etc/inittab"
-  echo -e "#!/bin/sh\n\nhostname -F /etc/hostname\nfastfetch -l small" > "build/alpine/root/.profile"
+  echo "#!/bin/sh
+mount -t proc none /proc
+mount -t sysfs none /sys
+hostname -F /etc/hostname
+echo 'VM boot complete' > /dev/hvc0
+fastfetch -l small" > "build/alpine/root/.profile"
   chmod +x "build/alpine/root/.profile"
-  
+
+  #set hostname and motd
   echo "linuxpdf" > "build/alpine/etc/hostname"
+  echo -n "" > "build/alpine/etc/motd"
+
+  #compile demos
+  mkdir -p build/alpine/root/demos/
+  git clone "https://github.com/kevinboone/fblife" build/alpine/root/demos/fblife
+  echo '#!/bin/sh
+set -e
+set +x
+apk add --no-cache gcc make musl-dev linux-headers
+
+cd /root/demos/fblife
+echo -e "#include <stdint.h>\n$(cat src/defs.h)" > src/defs.h
+make
+mv fblife /root/
+
+cd /
+apk del gcc make musl-dev linux-headers
+rm -rf /root/demos
+' > build/alpine/tmp/setup.sh
+  chmod +x build/alpine/tmp/setup.sh
+  sudo chroot "build/alpine" /bin/sh /tmp/setup.sh
 }
 
 #use a 9pfs mount for the root - more efficient

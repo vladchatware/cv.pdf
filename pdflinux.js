@@ -3,6 +3,17 @@ var Browser = {};
 var lines = [];
 var req_handle = 0;
 var timeout_callbacks = {};
+var line_buffer = "";
+
+var graphic_display = {
+  width: 320, 
+  height: 200, 
+  data: new Uint8Array(320 * 200 * 4)
+}
+
+var performance = {
+  now() {return Date.now()}
+}
 
 function set_timeout_callback(id) {
   timeout_callbacks[id]();
@@ -29,10 +40,6 @@ function set_interval(callback, interval) {
   app.setInterval(safe_script(`set_interval_callback(${id})`), interval);
 }
 
-var performance = {
-  now() {return Date.now()}
-}
-
 function print_msg(msg) {
   lines.push(""+msg);
   if (lines.length > 25) 
@@ -45,7 +52,7 @@ function print_msg(msg) {
 }
 
 Module.print = function(msg) {
-  let max_len = 50;
+  let max_len = 40;
   let num_lines = Math.ceil(msg.length / max_len);
   
   for (let i = 0, o = 0; i < num_lines; ++i, o += max_len) {
@@ -61,8 +68,8 @@ function start() {
   Module.ccall("vm_start", null, ["string", "number", "string", "string", "number", "number", "number", "string"], args);
 }
 
-function round_float(num, digits) {
-  let multiplier = Math.pow(10, digits);
+function round_float(num, s) {
+  let multiplier = Math.pow(10, s);
   return Math.round(num * multiplier) / multiplier;
 }
 
@@ -119,10 +126,82 @@ function update_framebuffer(width, height, data) {
   }
 }
 
-var graphic_display = {
-  width: 320,
-  height: 200,
-  data: new Uint8Array(320 * 200 * 4)
+var key_to_input_map = {
+  "Esc": 0x01, "1": 0x02, "2": 0x03, "3": 0x04, "4": 0x05, "5": 0x06, "6": 0x07, 
+  "7": 0x08, "8": 0x09, "9": 0x0a, "0": 0x0b, "-": 0x0c, "=": 0x0d, "Backspace": 0x0e, 
+  "Tab": 0x0f, "q": 0x10, "w": 0x11, "e": 0x12, "r": 0x13, "t": 0x14, "y": 0x15, 
+  "u": 0x16, "i": 0x17, "o": 0x18, "p": 0x19, "[": 0x1a, "]": 0x1b, "Enter": 0x1c, 
+  "Ctrl": 0x1d, "a": 0x1e, "s": 0x1f, "d": 0x20, "f": 0x21, "g": 0x22, "h": 0x23, 
+  "j": 0x24, "k": 0x25, "l": 0x26, ";": 0x27, "'": 0x28, "`": 0x29, "Shift": 0x2a, 
+  "\\": 0x2b, "z": 0x2c, "x": 0x2d, "c": 0x2e, "v": 0x2f, "b": 0x30, "n": 0x31, 
+  "m": 0x32, ",": 0x33, ".": 0x34, "/": 0x35, "RShift": 0x36, "Alt": 0x38, "Space": 0x39, 
+  "CapsLock": 0x3a, "F1": 0x3b, "F2": 0x3c, "F3": 0x3d, "F4": 0x3e, "F5": 0x3f, 
+  "F6": 0x40, "F7": 0x41, "F8": 0x42, "F9": 0x43, "F10": 0x44, "F11": 0x57, "F12": 0x58, 
+  "RCtrl": 97, "RAlt": 100, "Home": 102, "ArrowUp": 103, "PageUp": 104, "ArrowLeft": 105, 
+  "ArrowRight": 106, "End": 107, "ArrowDown": 108, "PageDown": 109, "Insert": 110, 
+  "Delete": 111, "ContextMenu": 127
+};
+
+//a map of characters that are emitted when pressing shift, to their original keys
+var keys_shifted_map = {
+  "~": "`", "!": "1", "@": "2", "#": "4", "%": "5", "^": "6", 
+  "&": "7", "*": "8", "(": "9", ")": "0", "_": "-", "+": "=", 
+  "{": "[", "}": "]", "|": "\\", ":": ";", "'": "\"", "<": ",", 
+  ">": ".", "?": "/"
+};
+
+var key_status_map = {};
+
+function setup_keys() {
+  for (let key_code of Object.values(key_to_input_map)) {
+    key_status_map[key_code] = false;
+  }
 }
+
+function key_down(key_code) {
+  if (key_status_map[key_code])
+    return;
+  key_status_map[key_code] = true;
+  _display_key_event(true, key_code);
+}
+
+function key_up(key_code) {
+  if (!key_status_map[key_code])
+    return;
+  key_status_map[key_code] = false;
+  _display_key_event(false, key_code);
+}
+
+function press_input(key_code) {
+  print_msg("pressed: " + key_code);
+  key_down(key_code);
+  key_up(key_code);
+}
+
+function key_pressed(key_str) {
+  let key_lower = key_str.toLowerCase();
+  let shift_pressed = false;
+  //edge case - pressing enter gives a 0 length string
+  if (key_str.length === 0) {
+    key_str = "Enter";
+  }
+  else if (key_str === " ") {
+    key_str = "Space";
+  }
+  //handle strings that are different than the actualk key because they were pressed with shift
+  else if (keys_shifted_map[key_str] || key_lower != key_str) {
+    key_str = keys_shifted_map[key_str] || key_lower;
+    shift_pressed = true;
+    key_down(key_to_input_map["Shift"]);
+  }
+
+  if (shift_pressed) key_down(key_to_input_map["Shift"]);
+  press_input(key_to_input_map[key_str]);
+  if (shift_pressed) key_up(key_to_input_map["Shift"]);
+}
+
+set_timeout(() => {
+  globalThis.getField("key_input").value = "Type here for keyboard inputs.";
+}, 1000)
 
 set_timeout(start, 100);
