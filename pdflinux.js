@@ -48,9 +48,22 @@ function start() {
   Module.ccall("vm_start", null, ["string", "number", "string", "string", "number", "number", "number", "string"], args);
 }
 
+function round_float(num, digits) {
+  let multiplier = Math.pow(10, digits);
+  return Math.round(num * multiplier) / multiplier;
+}
+
+function machine_tick(m_ptr) {
+  let start = Date.now();
+  let instruction_count = _virt_machine_run(m_ptr);
+  let end = Date.now();
+  let k_ips = Math.round(instruction_count / ((end - start) / 1000) / 1000);
+  globalThis.getField("speed_indicator").value = `Speed: ${k_ips} kIPS`;
+}
+
 function start_machine_interval(m_ptr) {
   print_msg("starting the machine. please be patient...")
-  set_interval_safe(`_virt_machine_run(${m_ptr})`, 1);
+  set_interval_safe(`machine_tick(${m_ptr})`, 1);
 }
 
 function set_interval_safe(js, timeout) {

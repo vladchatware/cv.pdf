@@ -98,6 +98,7 @@ if __name__ == "__main__":
     field = create_field(f"console_{i}", 8, 8 + i*8, 300, 8, "")
     fields.append(field)
 
+  fields.append(create_field("speed_indicator", 320, 8, 80, 12, "Loading..."))
   fields += create_key_buttons([])
 
   page.Contents = PdfDict()

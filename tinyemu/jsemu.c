@@ -300,7 +300,7 @@ static void init_vm(void *arg)
 
 /* need to be long enough to hide the non zero delay of setTimeout(_, 0) */
 #define MAX_EXEC_TOTAL_CYCLE 1000000
-#define MAX_EXEC_CYCLE        200000
+#define MAX_EXEC_CYCLE          1000
 
 #define MAX_SLEEP_TIME 10 /* in ms */
 
@@ -341,7 +341,7 @@ int virt_machine_run(void *opaque)
         virt_machine_interp(m, MAX_EXEC_CYCLE);
         i++;
     }
-    return delay;
+    return i * MAX_EXEC_CYCLE;
     
     /*
     if (delay == 0) {
