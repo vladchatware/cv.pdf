@@ -40,7 +40,7 @@
 #include "list.h"
 #include "fbuf.h"
 
-void virt_machine_run(void *opaque);
+int virt_machine_run(void *opaque);
 
 /* provided in lib.js */
 extern void console_write(void *opaque, const uint8_t *buf, int len);
@@ -293,16 +293,18 @@ static void init_vm(void *arg)
     }
     free(s);
     
-    emscripten_async_call(virt_machine_run, m, 0);
+    EM_ASM({
+        start_machine_interval($0);
+    }, m);
 }
 
 /* need to be long enough to hide the non zero delay of setTimeout(_, 0) */
-#define MAX_EXEC_TOTAL_CYCLE 3000000
+#define MAX_EXEC_TOTAL_CYCLE 1000000
 #define MAX_EXEC_CYCLE        200000
 
 #define MAX_SLEEP_TIME 10 /* in ms */
 
-void virt_machine_run(void *opaque)
+int virt_machine_run(void *opaque)
 {
     VirtMachine *m = opaque;
     int delay, i;
@@ -339,11 +341,14 @@ void virt_machine_run(void *opaque)
         virt_machine_interp(m, MAX_EXEC_CYCLE);
         i++;
     }
+    return delay;
     
+    /*
     if (delay == 0) {
         emscripten_async_call(virt_machine_run, m, 0);
     } else {
         emscripten_async_call(virt_machine_run, m, MAX_SLEEP_TIME);
     }
+    */
 }
 

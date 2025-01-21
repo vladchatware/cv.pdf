@@ -28,7 +28,7 @@ mergeInto(LibraryManager.library, {
       /* Note: we really send byte values. It would be up to the
         * terminal to support UTF-8 */
       str = String.fromCharCode.apply(String, HEAPU8.subarray(buf, buf + len));
-      console.log(str);
+      print_msg(str);
       //term.write(str);
   },
 
@@ -64,16 +64,17 @@ mergeInto(LibraryManager.library, {
     var _url = UTF8ToString(url);
     var _request = UTF8ToString(request);
     
-    var handle = Browser.getNextWgetRequestHandle();
+    //var handle = Browser.getNextWgetRequestHandle();
+    var handle = req_handle++;
 
     if (!_url.startsWith("file:///")) {
-      console.error("invalid url:", _url);
+      print_msg("invalid url: " +  _url);
       if (onerror) dynCall('viiii', onerror, [handle, arg, 404, "not found"]);
     }
 
     var path = _url.replace("file:///", "").split("?").shift();
-    console.log("loading", path);
-    setTimeout(() => {
+    print_msg("loading " + path);
+    set_timeout(() => {
       if (typeof embedded_files[path] !== "undefined") {
         var file_array = embedded_files[path];
         var buffer = _malloc(file_array.length);
@@ -82,16 +83,15 @@ mergeInto(LibraryManager.library, {
         if (free) _free(buffer);
       }
       else {
-        console.error("no file:", _url);
+        print_msg("no file:" + _url);
         if (onerror) dynCall('viiii', onerror, [handle, arg, 404, "not found"]);
       }
-    });
-    
+    }, 1);
     return handle;
   },
 
   fs_wget_update_downloading: function (flag) {
-    update_downloading(Boolean(flag));
+    //update_downloading(Boolean(flag));
   },
     
   fb_refresh: function(opaque, data, x, y, w, h, stride) {
@@ -100,7 +100,7 @@ mergeInto(LibraryManager.library, {
     display = graphic_display;
     /* current x = 0 and w = width for all refreshes */
 //      console.log("fb_refresh: x=" + x + " y=" + y + " w=" + w + " h=" + h);
-    image_data = display.image.data;
+    image_data = display.data;
     image_stride = display.width * 4;
     dst_pos1 = (y * display.width + x) * 4;
     for(i = 0; i < h; i = (i + 1) | 0) {
@@ -118,7 +118,8 @@ mergeInto(LibraryManager.library, {
       data = (data + stride) | 0;
       dst_pos1 = (dst_pos1 + image_stride) | 0;
     }
-    display.ctx.putImageData(display.image, 0, 0, x, y, w, h);
+    update_framebuffer(display.width, display.height, image_data);
+    //display.ctx.putImageData(display.image, 0, 0, x, y, w, h);
   },
 
   net_recv_packet: function(bs, buf, buf_len) {

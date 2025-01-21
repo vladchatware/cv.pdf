@@ -10,6 +10,7 @@ if [ ! -d "./emsdk" ]; then
 fi
 
 source ./emsdk/emsdk_env.sh >/dev/null 2>&1
+source ./.venv/bin/activate >/dev/null 2>&1
 
 mkdir -p out build
 if [ ! -f "build/vm.tar.gz" ]; then
@@ -45,7 +46,7 @@ build_files() {
   fi
   if [ ! -d "build/files" ]; then
     mkdir -p build/files/root
-    sudo build/build_files build/root/ build/files/root
+    sudo build/build_files build/alpine/ build/files/root
   fi 
 }
 
@@ -75,4 +76,6 @@ build_files
 cp vm.cfg build/vm/bbl64.bin build/vm/kernel-riscv64.bin build/files
 
 python3 embed_files.py file_template.js build/files/ build/files.js
-cat build/pako.min.js tinyemu/js/riscvemu64.js build/files.js pdflinux.js > out/compiled.js
+cat build/pako.min.js build/files.js pdflinux.js tinyemu/js/riscvemu64.js > out/compiled.js
+
+python3 gen_pdf.py out/compiled.js out/linux.pdf
