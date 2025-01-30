@@ -122,3 +122,4 @@ python3 embed_files.py file_template.js build/files/ build/files.js
 cat build/pako.min.js build/files.js pdflinux.js tinyemu/js/riscvemu64.js > out/compiled.js
 
 python3 gen_pdf.py out/compiled.js out/linux.pdf
+cp web/* out
