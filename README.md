@@ -4,6 +4,8 @@ This is Linux running inside a PDF file via a RISC-V emulator, which is based on
 
 Try it here: [linux.pdf](https://linux.doompdf.dev/linux.pdf)
 
+https://github.com/user-attachments/assets/b0bf106b-6de3-4534-956b-6bd1242154b6
+
 ## Explanation
 
 This works in a very similar way to my previous [DoomPDF](https://github.com/ading2210/doompdf) project.
@@ -16,6 +18,8 @@ C code can be compiled to run within a PDF using an old version of Emscripten th
 
 The largest problem here is with the emulator's performance. For example, the Linux kernel takes about 30-60 seconds to boot up within the PDF, which over 100x slower than normal. Unfortunately, there's no way to fix this, since the version of V8 that Chrome's PDF engine uses has its [JIT compiler disabled](https://source.chromium.org/chromium/_/pdfium/pdfium/+/012fe571c9fe430da68dbcd2f5ba21758db0ae15:fpdfsdk/fpdf_view.cpp;l=1211-1214;drc=b69783fd189976dd4625c7dcd9c07921b94d4a3c;bpv=0;bpt=0), destroying its performance.
 
+For the root filesystem, there are both 64 and 32 bit versions possible. The default is a 32 bit buildroot system (which was prebuilt and taken from the original TinyEMU examples), and also a 64 bit Alpine Linux system. The 64 bit emulator is about as twice slow however, so it's normally not used. 
+
 ## Build Instructions
 
 Clone this repository and run the following commands:
@@ -23,8 +27,9 @@ Clone this repository and run the following commands:
 python3 -m venv .venv
 source .venv/bin/activate
 pip3 install -r requirements.txt
-env ./build.sh
+./build.sh
 ```
+If you want to build the 64 bit rather than 32 bit version, edit `build.sh` and change the `BITS="32"` line.
 
 The `build.sh` script will download Emscripten `1.39.20` automatically. You must be on Linux to build this. 
 
