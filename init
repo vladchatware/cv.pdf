@@ -15,8 +15,9 @@ cd $HOME
 while /bin/true; do
   clear
   echo "Welcome to LinuxPDF"
-  echo "This is a riscv32 emulator running:"
-  uname -sr
+  echo
+  echo "This is a riscv32 emulator based on"
+  echo "TinyEMU, modified to run inside a PDF."
   echo
   echo "Source code:"
   echo "https://github.com/ading2210/linuxpdf"

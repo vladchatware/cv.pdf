@@ -175,12 +175,13 @@ function key_up(key_code) {
 }
 
 function press_input(key_code) {
-  print_msg("pressed: " + key_code);
   key_down(key_code);
   key_up(key_code);
 }
 
 function button_down(key_str) {
+  if (typeof key_to_input_map[key_str] === "undefined") 
+    app.alert("bad key: " + key_str);
   print_msg("down: " + key_str);
   key_down(key_to_input_map[key_str]);
 }
@@ -190,13 +191,19 @@ function button_up(key_str) {
   key_up(key_to_input_map[key_str]);
 }
 
+var pressed_list = [];
 function button_toggle(key_str) {
+  if (typeof key_to_input_map[key_str] === "undefined") 
+    app.alert("bad key: " + key_str);
   if (key_status_map[key_to_input_map[key_str]]) {
+    pressed_list.splice(pressed_list.indexOf(key_str), 1);
     button_up(key_str);
   }
   else {
+    pressed_list.push(key_str);
     button_down(key_str);
   }
+  globalThis.getField("key_status").value = "Pressed: " + pressed_list.join(", ");
 }
 
 function key_pressed(key_str) {
@@ -213,6 +220,7 @@ function key_pressed(key_str) {
   }
 
   if (shift_pressed) key_down(key_to_input_map["Shift"]);
+  print_msg("pressed: " + key_str);
   press_input(key_to_input_map[key_str]);
   if (shift_pressed) key_up(key_to_input_map["Shift"]);
 }
