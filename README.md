@@ -4,7 +4,7 @@ This is Linux running inside a PDF file via a RISC-V emulator, which is based on
 
 Try it here: [linux.pdf](https://linux.doompdf.dev/linux.pdf)
 
-https://github.com/user-attachments/assets/b0bf106b-6de3-4534-956b-6bd1242154b6
+https://github.com/user-attachments/assets/7e992dd1-41a5-4d32-87cc-878b395e3d92
 
 ## Explanation
 
