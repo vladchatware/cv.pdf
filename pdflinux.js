@@ -225,7 +225,7 @@ function key_pressed(key_str) {
   if (shift_pressed) key_up(key_to_input_map["Shift"]);
 }
 
-set_timeout(() => {
+set_interval(() => {
   globalThis.getField("key_input").value = "Type here for keyboard inputs.";
 }, 1000)
 
