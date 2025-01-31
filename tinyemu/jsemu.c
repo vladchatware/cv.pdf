@@ -299,7 +299,7 @@ static void init_vm(void *arg)
 }
 
 /* need to be long enough to hide the non zero delay of setTimeout(_, 0) */
-#define MAX_EXEC_TOTAL_CYCLE 1000000
+#define MAX_EXEC_TOTAL_CYCLE  100000
 #define MAX_EXEC_CYCLE          1000
 
 #define MAX_SLEEP_TIME 10 /* in ms */

@@ -106,7 +106,7 @@ mergeInto(LibraryManager.library, {
 
     display = graphic_display;
     /* current x = 0 and w = width for all refreshes */
-//      console.log("fb_refresh: x=" + x + " y=" + y + " w=" + w + " h=" + h);
+    // print_msg("fb_refresh: x=" + x + " y=" + y + " w=" + w + " h=" + h);
     image_data = display.data;
     image_stride = display.width * 4;
     dst_pos1 = (y * display.width + x) * 4;
@@ -125,7 +125,7 @@ mergeInto(LibraryManager.library, {
       data = (data + stride) | 0;
       dst_pos1 = (dst_pos1 + image_stride) | 0;
     }
-    update_framebuffer(display.width, display.height, image_data);
+    update_framebuffer(display.width, display.height, image_data, y, h);
     //display.ctx.putImageData(display.image, 0, 0, x, y, w, h);
   },
 

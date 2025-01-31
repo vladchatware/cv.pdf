@@ -64,6 +64,7 @@ Module.printErr = function(msg) {
 }
 
 function start() {
+  update_framebuffer(320, 200, new Uint8Array(320*200*4), 0, 200);
   let cfg_file = typeof embedded_files["vm_32.cfg"] === "undefined" ? "vm_64.cfg" : "vm_32.cfg";
   var args = [`file:///${cfg_file}`, 128, "", null, 0, 0, 1, ""];
   Module.ccall("vm_start", null, ["string", "number", "string", "string", "number", "number", "number", "string"], args);
@@ -95,8 +96,8 @@ function start_machine_interval(m_ptr) {
   set_interval(() => {machine_tick(m_ptr)}, 1)
 }
 
-function update_framebuffer(width, height, data) {
-  for (let y=0; y < height; y++) {
+function update_framebuffer(width, height, data, start_y, updated_height) {
+  for (let y=start_y; y < start_y + updated_height; y++) {
     let row = Array(width);
     let old_row = row.join("");
     for (let x=0; x < width; x++) {
@@ -138,8 +139,8 @@ var key_to_input_map = {
   "m": 0x32, ",": 0x33, ".": 0x34, "/": 0x35, "RShift": 0x36, "Alt": 0x38, "Space": 0x39, 
   "CapsLock": 0x3a, "F1": 0x3b, "F2": 0x3c, "F3": 0x3d, "F4": 0x3e, "F5": 0x3f, 
   "F6": 0x40, "F7": 0x41, "F8": 0x42, "F9": 0x43, "F10": 0x44, "F11": 0x57, "F12": 0x58, 
-  "RCtrl": 97, "RAlt": 100, "Home": 102, "ArrowUp": 103, "PageUp": 104, "ArrowLeft": 105, 
-  "ArrowRight": 106, "End": 107, "ArrowDown": 108, "PageDown": 109, "Insert": 110, 
+  "RCtrl": 97, "RAlt": 100, "Home": 102, "ArrowUp": 103, "PgUp": 104, "ArrowLeft": 105, 
+  "ArrowRight": 106, "End": 107, "ArrowDown": 108, "PgDn": 109, "Insert": 110, 
   "Delete": 111, "ContextMenu": 127
 };
 
@@ -179,17 +180,32 @@ function press_input(key_code) {
   key_up(key_code);
 }
 
+function button_down(key_str) {
+  print_msg("down: " + key_str);
+  key_down(key_to_input_map[key_str]);
+}
+
+function button_up(key_str) {
+  print_msg("up: " + key_str);
+  key_up(key_to_input_map[key_str]);
+}
+
+function button_toggle(key_str) {
+  if (key_status_map[key_to_input_map[key_str]]) {
+    button_up(key_str);
+  }
+  else {
+    button_down(key_str);
+  }
+}
+
 function key_pressed(key_str) {
   let key_lower = key_str.toLowerCase();
   let shift_pressed = false;
-  //edge case - pressing enter gives a 0 length string
-  if (key_str.length === 0) {
-    key_str = "Enter";
-  }
-  else if (key_str === " ") {
+  if (key_str === " ") {
     key_str = "Space";
   }
-  //handle strings that are different than the actualk key because they were pressed with shift
+  //handle strings that are different than the actual key because they were pressed with shift
   else if (keys_shifted_map[key_str] || key_lower != key_str) {
     key_str = keys_shifted_map[key_str] || key_lower;
     shift_pressed = true;

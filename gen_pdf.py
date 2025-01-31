@@ -9,7 +9,7 @@ from pdfrw.objects.pdfarray import PdfArray
 def create_script(js):
   action = PdfDict()
   action.S = PdfName.JavaScript
-  action.JS = js
+  action.JS = "try {"+js+"} catch (e) {app.alert(e.stack || e)}"
   return action
   
 def create_page(width, height):
@@ -68,12 +68,29 @@ def create_button(name, x, y, width, height, value):
 def create_key_buttons(keys_info):
   buttons = []
   for info in keys_info:
-    name = info["name"] + "_button"
     key = info["key"]
-    button = create_button(name, info["x"], info["y"], info["width"], info["height"], info["name"])
+    name = "button_" + key 
+    value = info.get("value") or key
+    button = create_button(name, info["x"], info["y"], info["width"], info["height"], value)
     button.AA = PdfDict()
-    button.AA.D = create_script(f"key_down('{key}')")
-    button.AA.U = create_script(f"key_up('{key}')")
+    if info.get("toggle"):
+      button.AA.D = create_script(f"button_toggle('{key}')")
+    else:
+      button.AA.D = create_script(f"button_down('{key}')")
+      button.AA.U = create_script(f"button_up('{key}')")
+
+    buttons.append(button)
+  return buttons
+
+def create_keys_row(keys, x, y, width, height, gap):
+  buttons = []
+  for i, key in enumerate(keys):
+    name = "button_" + key 
+    new_x = x + i * (width + gap)
+    button = create_button(name, new_x, y, width, height, key.upper())
+    button.AA = PdfDict()
+    button.AA.D = create_script(f"button_down('{key}')")
+    button.AA.U = create_script(f"button_up('{key}')")
     buttons.append(button)
   return buttons
 
@@ -88,7 +105,7 @@ if __name__ == "__main__":
   writer = PdfWriter()
   page = create_page(width * scale-8, height * scale + 220)
   page.AA = PdfDict()
-  page.AA.O = create_script("try {"+js+"} catch (e) {app.alert(e.stack || e)}");
+  page.AA.O = create_script(js)
 
   fields = []
   for i in range(0, height):
@@ -98,13 +115,50 @@ if __name__ == "__main__":
     field = create_field(f"console_{i}", 8, 8 + i*8, 200, 8, "")
     fields.append(field)
 
-  fields.append(create_field("speed_indicator", 600, 8, 100, 12, "Loading..."))
+  fields.append(create_field("speed_indicator", 582, 170, 96, 12, "Loading..."))
   input_field = create_field(f"key_input", 220, 8, 150, 12, "Type here for keyboard inputs.")
   input_field.AA = PdfDict()
   input_field.AA.K = create_script("key_pressed(event.change)")
   fields.append(input_field)
 
-  fields += create_key_buttons([])
+  fields += create_key_buttons([
+    dict(key="Esc", x=220, y=170, width=20, height=12),
+    dict(key="`", x=220, y=148, width=12, height=16),
+    dict(key="Backspace", value="<----", x=550, y=148, width=50, height=16),
+
+    dict(key="Tab", x=220, y=128, width=24, height=16),
+    dict(key="\\", x=562, y=128, width=38, height=16),
+
+    dict(key="CapsLock", value="Caps", x=220, y=108, width=30, height=16),
+    dict(key="Enter", x=542, y=108, width=58, height=16),
+
+    dict(key="Shift", x=220, y=88, width=44, height=16, toggle=True),
+    dict(key="Shift", x=530, y=88, width=70, height=16),
+
+    dict(key="Ctrl", x=220, y=68, width=36, height=16, toggle=True),
+    dict(key="Alt", x=260, y=68, width=36, height=16, toggle=True),
+    dict(key="Space", x=300, y=68, width=174, height=16),
+    dict(key="RAlt", value="Alt", x=480, y=68, width=36, height=16, toggle=True),
+    dict(key="ContextMenu", value="Menu", x=522, y=68, width=36, height=16),
+    dict(key="RCtrl", value="Ctrl", x=564, y=68, width=36, height=16, toggle=True),
+
+    dict(key="Home", x=608, y=148, width=32, height=16),
+    dict(key="Insert", value="Ins", x=608, y=128, width=32, height=16),
+    dict(key="Delete", value="Del", x=608, y=108, width=32, height=16),
+    dict(key="End", x=646, y=148, width=32, height=16),
+    dict(key="PgUp", x=646, y=128, width=32, height=16),
+    dict(key="PgDn", x=646, y=108, width=32, height=16),
+
+    dict(key="ArrowUp", value="^", x=633, y=88, width=20, height=16),
+    dict(key="ArrowLeft", value="<", x=608, y=68, width=20, height=16),
+    dict(key="ArrowDown", value="v", x=633, y=68, width=20, height=16),
+    dict(key="ArrowRight", value=">", x=658, y=68, width=20, height=16),
+  ])
+  fields += create_keys_row([f"F{i}" for i in range(1, 13)], 246, 170, 22, 12, 6)
+  fields += create_keys_row("1234567890-=", 238, 148, 20, 16, 6)
+  fields += create_keys_row("qwertyuiop[]", 250, 128, 20, 16, 6)
+  fields += create_keys_row("asdfghjkl;'", 256, 108, 20, 16, 6)
+  fields += create_keys_row("zxcvbnm,./", 270, 88, 20, 16, 6)
 
   page.Contents = PdfDict()
   page.Contents.stream = "\n".join([
