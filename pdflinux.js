@@ -64,7 +64,8 @@ Module.printErr = function(msg) {
 }
 
 function start() {
-  var args = ["file:///vm.cfg", 128, "", null, 0, 0, 1, ""];
+  let cfg_file = typeof embedded_files["vm_32.cfg"] === "undefined" ? "vm_64.cfg" : "vm_32.cfg";
+  var args = [`file:///${cfg_file}`, 128, "", null, 0, 0, 1, ""];
   Module.ccall("vm_start", null, ["string", "number", "string", "string", "number", "number", "number", "string"], args);
 }
 

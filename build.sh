@@ -3,6 +3,8 @@
 set -e
 set -x
 
+BITS="32"
+
 if [ ! -d "./emsdk" ]; then
   git clone https://github.com/emscripten-core/emsdk.git --branch 1.39.20
   ./emsdk/emsdk install 1.39.20-fastcomp
@@ -82,14 +84,29 @@ rm -rf /root/demos
   sudo chroot "build/alpine" /bin/sh /tmp/setup.sh
 }
 
+get_img_rootfs() {
+  mkdir -p build/mountpoint
+  sudo mount -o ro build/vm/root-riscv$BITS.bin build/mountpoint
+  sudo cp -ar build/mountpoint build/root
+  sudo cp -ar ./init build/root/sbin/init
+  sudo umount build/mountpoint
+  rm -rf build/mountpoint
+}
+
 #use a 9pfs mount for the root - more efficient
 build_files() {
-  if [ ! -d "build/alpine" ]; then
-    get_alpine_rootfs
+  [ "$BITS" = "64" ] && root_dir="build/alpine" || root_dir="build/root"
+  if [ ! -d "$root_dir" ]; then
+    if [ "$BITS" = "64" ]; then
+      get_alpine_rootfs
+    else
+      get_img_rootfs
+    fi
   fi
+
   if [ ! -d "build/files" ]; then
     mkdir -p build/files/root
-    sudo build/build_files build/alpine/ build/files/root
+    sudo build/build_files "$root_dir" build/files/root
   fi 
 }
 
@@ -97,7 +114,7 @@ build_files() {
 build_disk() {
   if [ ! -d "build/files/disk" ]; then
     mkdir -p build/files/disk
-    cp build/vm/root-riscv64.bin build/files/disk/root.bin
+    cp build/vm/root-riscv$BITS.bin build/files/disk/root.bin
 
     block_size="256"
     (
@@ -116,10 +133,10 @@ build_disk() {
 }
 
 build_files
-cp vm.cfg build/vm/bbl64.bin build/vm/kernel-riscv64.bin build/files
+cp vm_$BITS.cfg build/vm/bbl$BITS.bin build/vm/kernel-riscv$BITS.bin build/files
 
 python3 embed_files.py file_template.js build/files/ build/files.js
-cat build/pako.min.js build/files.js pdflinux.js tinyemu/js/riscvemu64.js > out/compiled.js
+cat build/pako.min.js build/files.js pdflinux.js tinyemu/js/riscvemu$BITS.js > out/compiled.js
 
 python3 gen_pdf.py out/compiled.js out/linux.pdf
 cp web/* out
