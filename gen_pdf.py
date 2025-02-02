@@ -89,6 +89,8 @@ def create_keys_row(keys, x, y, width, height, gap):
     new_x = x + i * (width + gap)
     button = create_button(name, new_x, y, width, height, key.upper())
     button.AA = PdfDict()
+    if key == "'":
+      key = "\\'"
     button.AA.D = create_script(f"button_down('{key}')")
     button.AA.U = create_script(f"button_up('{key}')")
     buttons.append(button)
@@ -134,7 +136,7 @@ if __name__ == "__main__":
     dict(key="Enter", x=542, y=108, width=58, height=16),
 
     dict(key="Shift", x=220, y=88, width=44, height=16, toggle=True),
-    dict(key="Shift", x=530, y=88, width=70, height=16),
+    dict(key="RShift", x=530, y=88, width=70, height=16),
 
     dict(key="Ctrl", x=220, y=68, width=36, height=16, toggle=True),
     dict(key="Alt", x=260, y=68, width=36, height=16, toggle=True),

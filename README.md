@@ -6,6 +6,8 @@ Try it here: [linux.pdf](https://linux.doompdf.dev/linux.pdf)
 
 https://github.com/user-attachments/assets/7e992dd1-41a5-4d32-87cc-878b395e3d92
 
+See also: [DoomPDF](https://github.com/ading2210/doompdf)
+
 ## Explanation
 
 This works in a very similar way to my previous [DoomPDF](https://github.com/ading2210/doompdf) project.
@@ -18,7 +20,7 @@ C code can be compiled to run within a PDF using an old version of Emscripten th
 
 The largest problem here is with the emulator's performance. For example, the Linux kernel takes about 30-60 seconds to boot up within the PDF, which over 100x slower than normal. Unfortunately, there's no way to fix this, since the version of V8 that Chrome's PDF engine uses has its [JIT compiler disabled](https://source.chromium.org/chromium/_/pdfium/pdfium/+/012fe571c9fe430da68dbcd2f5ba21758db0ae15:fpdfsdk/fpdf_view.cpp;l=1211-1214;drc=b69783fd189976dd4625c7dcd9c07921b94d4a3c;bpv=0;bpt=0), destroying its performance.
 
-For the root filesystem, there are both 64 and 32 bit versions possible. The default is a 32 bit buildroot system (which was prebuilt and taken from the original TinyEMU examples), and also a 64 bit Alpine Linux system. The 64 bit emulator is about as twice slow however, so it's normally not used. 
+For the root filesystem, there are both 64 and 32 bit versions possible. The default is a 32 bit buildroot system (which was prebuilt and taken from the original TinyEMU examples), and also a 64 bit Alpine Linux system. The 64 bit emulator is about twice as slow however, so it's normally not used. 
 
 ## Build Instructions
 
