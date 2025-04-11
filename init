@@ -22,6 +22,12 @@ while /bin/true; do
   echo "Source code:"
   echo "https://github.com/ading2210/linuxpdf"
   echo
+  echo "Vladislav Rimsha CV"
+  echo "https://github.com/jellyninjadev/cv.pdf/releases/download/v1.0.0/cv.pdf"
+  echo
+  echo "Thanks Fabrice Bellard for writing TinyEmu"
+  echo "and Allen for thinking outside of the box"
+  echo
   setsid sh;
 
 done

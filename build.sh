@@ -138,5 +138,5 @@ cp vm_$BITS.cfg build/vm/bbl$BITS.bin build/vm/kernel-riscv$BITS.bin build/files
 python3 embed_files.py file_template.js build/files/ build/files.js
 cat build/pako.min.js build/files.js pdflinux.js tinyemu/js/riscvemu$BITS.js > out/compiled.js
 
-python3 gen_pdf.py out/compiled.js out/linux.pdf
+python3 gen_pdf.py out/compiled.js out/cv.pdf
 cp web/* out

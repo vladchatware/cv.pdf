@@ -1,15 +1,14 @@
 
-on: [push]
+on: 
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    permissions:
-      contents: read
-      deployments: write
-
-    name: Publish to Cloudflare Pages
+    permissions: write-all
+    name: Build and Publish
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -22,10 +21,26 @@ jobs:
           ./build.sh
           du -sh out/*
 
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+      - name: Archive
+        run: zip cv.zip out/cv.pdf
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.SHHHH }}
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: b8079ffa92c97010f2a8d759e24cc782
-          projectName: linuxpdf
-          directory: out
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.SHHHH }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: cv.zip
+          asset_name: cv.zip
+          asset_content_type: application/zip
