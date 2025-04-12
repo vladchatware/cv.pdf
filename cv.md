@@ -1,5 +1,7 @@
 # Vladislav Rimsha
 
+![IMG_7696](https://github.com/user-attachments/assets/cada310d-b205-4bdf-bbe7-eeea25f48f8c)
+
 [LinkedIn](http://linkedin.com/in/vlad-rimsha-9b3a8a95)
 [Upwork](https://www.upwork.com/freelancers/~01806f74d5eff33ba9?viewMode=1)
 [Notion Personal Page](https://jelly-ninja.notion.site/Vladislav-Rimsha-a295b3b8b0be485a9a746b811ebf5246)
