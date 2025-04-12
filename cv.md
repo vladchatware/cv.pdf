@@ -32,8 +32,10 @@ _Lusesi Co. Ltd. Bangkok, Thailand_
 2022 - present
 
 **Fractional CTO**
-_Bangerz Army, London, UK_ (remote)
+_Freyja Creative Ltd., London, UK_ (remote)
 2023 - 2024
+
+- Bangerz Army
 
 **CTO**
 _Bonvi Inc., Portland, US_ (remote)
@@ -107,12 +109,12 @@ _Kode_, Kaliningrad, Russia
 
 ## Education
 
-_Modern Academy of Humanities, Kaliningrad, Russia_
+_Modern Academy of Humanities_, Kaliningrad, Russia
 2010 - 2013
 
 - Got hired as IT engineer instead of study
 
-_Immanuel Kant Baltic Federal University, Kaliningrad, Russia
+_Immanuel Kant Baltic Federal University_, Kaliningrad, Russia
 2007 - 2011
 
 - Wrote software automations for academic office
@@ -129,7 +131,7 @@ _Lyceum (school) #49_, Kaliningrad, Russia
 - Hackathon 3rd place with restaurant reservation app (Restbook) in 48h 2015
 - Upwork 5 star with >$200k
 
---
+---
 
 ## Languages
 
