@@ -6,7 +6,7 @@ const pages = await browser.pages()
 const page = pages[0]
 
 if (headless) {
-  await page.goto(`file://${__dirname}/cv.md`)
+  await page.goto(`file://${__dirname}/README.md`)
   await page.pdf({
     path: 'cv.pdf',
   })
