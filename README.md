@@ -95,7 +95,7 @@ _Kode_, Kaliningrad, Russia
 ## Education
 
 _Modern Academy of Humanities_, Kaliningrad, Russia
-2010 - 2013
+2011 - 2013
 
 - Got hired as IT engineer instead of study
 
