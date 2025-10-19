@@ -25,10 +25,6 @@ Autodidact, engineer, entrepreneur, creator.
 
 ## Experience
 
-**Co-Founder**
-_Lusesi Co. Ltd. Bangkok, Thailand_
-2022 - present
-
 **Fractional CTO**
 _Freyja Creative Ltd., London, UK_ (remote)
 2023 - 2024
@@ -37,19 +33,13 @@ _Freyja Creative Ltd., London, UK_ (remote)
 
 **CTO**
 _Bonvi Inc., Portland, US_ (remote)
-2021 - 2022
+2022 - 2023
 
-**CTO**
-_IMBC, Lipa, Philippines_
-2020 - 2021
 
 **Senior SWE**
 _Crowdbotics, CA, USA_ (remote)
 2018 - 2022
 
-- Ajaib
-- Ready to Meet
-- Mixxia
 - [Carl](https://investwithcarl.com)
 - [Xola](https://xola.com)
 
@@ -87,8 +77,9 @@ _Kode_, Kaliningrad, Russia
 
 ## Projects
 
-- [Gumroad Shop](https://vlad.chat)
-- [Lazada Seller](https://s.lazada.co.th/s.EcP9Q?dsource=share&laz_share_info=1800404897_100_1600_0_1800406897_null&laz_token=2fdab72089d2153cd117355e924c7e70)
+- [Chat Agent](https///vlad.chat)
+- [AI DJ](https://music.vlad.chat)
+- [Introspective tools](https://shop.vlad.chat)
 
 ---
 
