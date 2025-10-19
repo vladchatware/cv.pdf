@@ -51,6 +51,8 @@ _Redq, NY, USA_
 _Docgo (former Ambulnz), NY, USA_
 2016 - 2017
 
+- https://docgo.com
+
 **Lead SWE**
 _Proovelab_, Kaliningrad, Russia
 2015 - 2016
