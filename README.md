@@ -4,9 +4,7 @@
 
 [LinkedIn](http://linkedin.com/in/vlad-rimsha-9b3a8a95)
 [Upwork](https://www.upwork.com/freelancers/~01806f74d5eff33ba9)
-[Notion Creator Page](https://www.notion.com/@vladchatware)
 [Youtube](https://www.youtube.com/@jelly-ninja)
-[Instagram](https://www.instagram.com/vlad.rimsha)
 
 ---
 
