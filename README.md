@@ -27,7 +27,7 @@ Autodidact, engineer, entrepreneur, creator.
 _Freyja Creative Ltd., London, UK_ (remote)
 2023 - 2024
 
-- Bangerz Army
+- [Bangerz Army](https://music.bangerz-army.com)
 
 **CTO**
 _Bonvi Inc., Portland, US_ (remote)
